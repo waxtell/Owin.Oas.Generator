@@ -65,10 +65,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Context\UnitOfWork.cs" />
+    <Compile Include="Exceptions\UnableToLoadDependencyException.cs" />
+    <Compile Include="Exceptions\UnableToLoadStartupAssemblyException.cs" />
+    <Compile Include="Exceptions\UnableToLoadStartupTypeException.cs" />
+    <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Build\Owin.Oas.Generator.props" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

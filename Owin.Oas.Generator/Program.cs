@@ -1,31 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using CommandLine;
 using Microsoft.Owin.Testing;
+using Owin.Oas.Generator.Context;
+using Owin.Oas.Generator.Exceptions;
 
 namespace Owin.Oas.Generator
 {
-    public class Program
+    public partial class Program
     {
-        public class Options
-        {
-            [Option('a', "assembly", Required = true, HelpText = "Assembly that contains Startup class.")]
-            public string Assembly { get; set; }
-
-            [Option('s', "startup", Required = false, HelpText = "Startup class name.")]
-            public string Startup { get; set; }
-
-            [Option('o', "output", Required = false, HelpText = "File name for generated OAS.",
-                Default = "swagger.json")]
-            public string Output { get; set; }
-
-            [Option('r', "route", Required = false, HelpText = "Route for OAS.", Default = "docs/v1")]
-            public string Route { get; set; }
-        }
-
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Parser
                 .Default
@@ -42,37 +29,106 @@ namespace Owin.Oas.Generator
             }
         }
 
+        private static Assembly Resolver(ResolveEventArgs args, IEnumerable<string> referencePaths)
+        {
+            if (args.Name.Contains(".resources"))
+            {
+                return null;
+            }
+
+            var assembly = AppDomain
+                                .CurrentDomain
+                                .GetAssemblies()
+                                .FirstOrDefault(a => a.FullName == args.Name);
+
+            if (assembly != null)
+            {
+                return assembly;
+            }
+
+            foreach (var path in referencePaths)
+            {
+                var filename = args.Name.Split(',')[0] + ".dll".ToLower();
+                var asmFile = Path.Combine(path, filename);
+
+                try
+                {
+#pragma warning disable S3885 // "Assembly.Load" should be used
+                    return Assembly.LoadFrom(asmFile);
+#pragma warning restore S3885 // "Assembly.Load" should be used
+                }
+                catch (Exception)
+                {
+                    // Not found, keep searching
+                }
+            }
+
+            throw new UnableToLoadDependencyException(args.Name);
+        }
+
         private static void DoWork(Options opts)
         {
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => Resolver(args, opts.ReferencePaths.Split(','));
+
             var startupType = GetStartupType(opts.Assembly, opts.Startup);
-            var testServer = BuildTestServer(startupType);
+
+            TestServer testServer = null;
+            new UnitOfWork(AppDomain.CurrentDomain.SetupInformation.ApplicationBase)
+                .DoWorkInContext
+                (
+                    opts.BaseDirectory,
+                    () => testServer = BuildTestServer(startupType)
+                );
 
             var wasSuccessful = GenerateOas(testServer, opts.Route, out var content);
-
             if (wasSuccessful)
             {
                 File.WriteAllText(opts.Output, content);
+                Console.WriteLine("OAS written to {0}", opts.Output);
             }
             else
             {
                 Console.WriteLine(content);
             }
+
+            Console.ReadKey();
         }
 
-        private static Type GetStartupType(string assembly, string startupClass)
+        private static Type GetStartupType(string assembly, string startupTypeName)
         {
-            var startupAssembly = Assembly.LoadFrom(assembly);
-            var startupType = startupAssembly.GetType(startupClass);
+            Assembly startupAssembly;
+            Type startupType;
+
+            try
+            {
+#pragma warning disable S3885 // "Assembly.Load" should be used
+                startupAssembly = Assembly.LoadFrom(assembly);
+#pragma warning restore S3885 // "Assembly.Load" should be used
+            }
+            catch (Exception ex)
+            {
+                throw new UnableToLoadStartupAssemblyException(assembly, ex);
+            }
+
+            try
+            {
+                startupType = startupAssembly.GetType(startupTypeName);
+            }
+            catch (Exception e)
+            {
+                throw new UnableToLoadStartupTypeException(startupTypeName, e);
+            }
 
             return startupType;
         }
 
         private static TestServer BuildTestServer(Type startupType)
         {
-            var createMethod = typeof(TestServer).GetMethod("Create");
-            var genericCreateMethod = createMethod?.MakeGenericMethod(startupType);
-
-            return (TestServer) genericCreateMethod?.Invoke(null, null);
+            return (TestServer) typeof(TestServer)
+                        .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                        .Single(x => x.Name == "Create" && x.IsGenericMethod)
+                        .MakeGenericMethod(startupType)
+                        .Invoke(null, null);
         }
 
         private static bool GenerateOas(TestServer server, string route, out string content)
