@@ -12,8 +12,7 @@ namespace Owin.Oas.Generator
             [Option('s', "startup", Required = true, HelpText = "The Startup class type in the form \"fulltypename\".")]
             public string Startup { get; set; }
 
-            [Option('o', "output", Required = false, HelpText = "File name for generated OAS.",
-                Default = "swagger.json")]
+            [Option('o', "output", Required = false, HelpText = "File name for generated OAS.",Default = "swagger.json")]
             public string Output { get; set; }
 
             [Option('r', "route", Required = false, HelpText = "Route for OAS.", Default = "swagger/docs/v1")]
@@ -24,6 +23,9 @@ namespace Owin.Oas.Generator
 
             [Option('p', "referencepaths", Required = false, HelpText = "Comma separated paths which will be searched when loading dependencies.")]
             public string ReferencePaths { get; set; }
+
+            [Option('h', "headers", Required = false, HelpText = "HTTP headers in the form key:value|key=value")]
+            public string Headers { get; set; }
         }
     }
 }

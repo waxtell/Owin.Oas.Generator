@@ -80,7 +80,12 @@ namespace Owin.Oas.Generator
                     () => testServer = BuildTestServer(startupType)
                 );
 
-            var wasSuccessful = GenerateOas(testServer, opts.Route, out var content);
+            var headers = opts
+                            .Headers
+                            .Split('|')
+                            .ToDictionary(k => k.Split(':')[0], v => v.Split(':')[1]);
+
+            var wasSuccessful = GenerateOas(testServer, opts.Route, headers, out var content);
             if (wasSuccessful)
             {
                 File.WriteAllText(opts.Output, content);
@@ -131,9 +136,18 @@ namespace Owin.Oas.Generator
                         .Invoke(null, null);
         }
 
-        private static bool GenerateOas(TestServer server, string route, out string content)
+        private static bool GenerateOas(TestServer server, string route, IDictionary<string,string> headers, out string content)
         {
-            var response = server.HttpClient.GetAsync(route).Result;
+            var request = server.CreateRequest(route);
+
+            foreach (var entry in headers)
+            {
+                request.AddHeader(entry.Key, entry.Value);
+            }
+
+            var response = request
+                            .GetAsync()
+                            .Result;
 
             content = response.Content.ReadAsStringAsync().Result;
 

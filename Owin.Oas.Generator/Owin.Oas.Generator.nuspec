@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Owin.Oas.Generator</id>
-    <version>1.0.8</version>
+    <version>1.0.0</version>
     <title>Owin.Oas.Generator</title>
     <authors>Will Axtell</authors>
     <owners>Will Axtell</owners>
