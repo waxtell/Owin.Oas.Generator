@@ -80,8 +80,7 @@ namespace Owin.Oas.Generator
                     () => testServer = BuildTestServer(startupType)
                 );
 
-            var headers = opts
-                            .Headers
+            var headers = (opts.Headers ?? string.Empty)
                             .Split('|')
                             .ToDictionary(k => k.Split(':')[0], v => v.Split(':')[1]);
 
@@ -95,8 +94,6 @@ namespace Owin.Oas.Generator
             {
                 Console.WriteLine(content);
             }
-
-            Console.ReadKey();
         }
 
         private static Type GetStartupType(string assembly, string startupTypeName)

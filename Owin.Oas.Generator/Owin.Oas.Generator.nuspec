@@ -19,7 +19,6 @@
   </metadata>
   <files>
     <file src="Build\**" target="build" />
-    <file src="bin\$Configuration$\CommandLine.xml" target="lib" />
-    <file src="bin\$Configuration$\*" target="tools/Win"/>
+    <file src="bin\debug\**" target="tools"/>
   </files>
 </package>
