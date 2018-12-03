@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Owin.Oas.Generator.Context
 {
@@ -15,7 +16,12 @@ namespace Owin.Oas.Generator.Context
         {
             if (!string.IsNullOrEmpty(newContext))
             {
-                SetContext(newContext);
+                SetContext
+                (
+                    Path.IsPathRooted(newContext)
+                        ? newContext
+                        : Path.GetFullPath(newContext)
+                );
             }
 
             try
@@ -31,7 +37,7 @@ namespace Owin.Oas.Generator.Context
             }
         }
 
-        private void SetContext(string context)
+        private static void SetContext(string context)
         {
             AppDomain
                 .CurrentDomain
