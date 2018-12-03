@@ -8,7 +8,7 @@ Install the nuget package and add the following MSBuild task (updating the assem
   <Target Name="Oas" AfterTargets="Build">
     <Exec Command="$(OasGenExe) ^
       --assembly $(ProjectDir)$(OutDir)MyOwinAssembly.dll ^
-      --startup MyOwinAssebly.Startup ^
+      --startup MyOwinAssembly.Startup ^
       --output $(OutDir)\swagger.json ^
       --referencepaths $(ProjectDir)$(OutDir) ^
       --base $(ProjectDir) ^
