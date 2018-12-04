@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Owin.Oas.Generator</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <title>Owin.Oas.Generator</title>
     <authors>Will Axtell</authors>
     <owners>Will Axtell</owners>
@@ -10,7 +10,10 @@
     <projectUrl>https://github.com/waxtell/Owin.Oas.Generator</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Command line tool for the retrieval of OAS from an Owin hosted web api.</description>
-    <releaseNotes>[1.0.0] Initial release</releaseNotes>
+    <releaseNotes>
+      [1.0.0] Initial release
+      [1.0.1] Updated AppVeyor build to generate tools package
+    </releaseNotes>
     <copyright>Copyright 2018</copyright>
     <tags>Swagger Owin OAS OpenAPI</tags>
     <developmentDependency>true</developmentDependency>
