@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Owin.Oas.Generator</id>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <title>Owin.Oas.Generator</title>
     <authors>Will Axtell</authors>
     <owners>Will Axtell</owners>
@@ -13,6 +13,7 @@
     <releaseNotes>
       [1.0.0] Initial release
       [1.0.1] Updated AppVeyor build to generate tools package
+      [1.0.2] Corrected null/empty header logic as to avoid null reference exception
     </releaseNotes>
     <copyright>Copyright 2018</copyright>
     <tags>Swagger Owin OAS OpenAPI</tags>

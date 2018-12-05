@@ -80,9 +80,12 @@ namespace Owin.Oas.Generator
                     () => testServer = BuildTestServer(startupType)
                 );
 
-            var headers = (opts.Headers ?? string.Empty)
-                            .Split('|')
-                            .ToDictionary(k => k.Split(':')[0], v => v.Split(':')[1]);
+            var headers = (!string.IsNullOrEmpty(opts.Headers) && opts.Headers.Contains(":"))
+                                ? opts
+                                    .Headers
+                                    .Split('|')
+                                    .ToDictionary(k => k.Split(':')[0], v => v.Split(':')[1])
+                                : new Dictionary<string, string>();
 
             var wasSuccessful = GenerateOas(testServer, opts.Route, headers, out var content);
             if (wasSuccessful)
