@@ -1,0 +1,32 @@
+{
+  "name": "owin-oas-generator",
+  "version": "1.0.0",
+  "optionalDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/waxtell/Owin.Oas.Generator.git"
+  },
+  "scripts": {},
+  "author": {
+    "name": "Will Axtell",
+    "email": "williamaxtell@alumni.pitt.edu",
+    "url": "https://github.com/waxtell"
+  },
+  "bin": {
+    "owin-oas-generator": "bin/index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/waxtell/Owin.Oas.Generator/issues"
+  },
+  "engines": {
+    "npm": ">=3.10.8"
+  },
+  "description": "Command line tool for the retrieval of OAS from an Owin hosted web api.",
+  "directories": {},
+  "homepage": "https://github.com/waxtell/Owin.Oas.Generator",
+  "installable": true,
+  "keywords": [
+    "oas swagger owin"
+  ],
+  "license": "MIT"
+}
